@@ -48,8 +48,8 @@ const { service, index } = Astro.props;
 	.service-detail__copy h2 { margin-bottom: 18px; }
 	.service-detail__description { max-width: 55ch; color: var(--charcoal); font-size: 16px; }
 	.service-detail__copy ul { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin: 22px 0 28px; padding: 0; list-style: none; }
-	.service-detail__copy li { position: relative; padding-left: 16px; color: var(--muted); font-size: 13px; }
-	.service-detail__copy li::before { position: absolute; left: 0; content: '\2713'; color: var(--gunmetal); font-weight: 800; }
+	.service-detail__copy li { position: relative; padding-left: 22px; color: var(--muted); font-size: 13px; }
+	.service-detail__copy li::before { position: absolute; top: .8em; left: 0; width: 10px; height: 1px; background: var(--gunmetal); content: ''; }
 	@media (max-width: 760px) {
 		.service-detail__inner { grid-template-columns: 1fr; gap: 26px; }
 		.service-detail--reverse .service-detail__image { order: 0; }
