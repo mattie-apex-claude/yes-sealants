@@ -13,8 +13,8 @@ export const site = {
 	instagram: 'https://www.instagram.com/yes_sealants/',
 	areaLine: 'Based in Bradford, covering West Yorkshire and surrounding areas.',
 	outOfAreaLine: 'Not near us? Get in touch and we’ll see if we can help.',
-	// Set PUBLIC_ENQUIRY_ENDPOINT (e.g. a Formspree form URL that forwards to the email above).
-	enquiryEndpoint: (import.meta.env.PUBLIC_ENQUIRY_ENDPOINT as string | undefined) ?? '',
+	// GoHighLevel inbound webhook for the enquiry form; it is a write-only trigger URL, not a credential.
+	enquiryWebhook: 'https://services.leadconnectorhq.com/hooks/aq2XEadvEUkqTdOIHdUj/webhook-trigger/3908fdb4-cf04-411c-bc90-575ee75b07ae',
 };
 
 export const locations = [

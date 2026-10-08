@@ -8,6 +8,7 @@ interface Service {
 	text: string;
 	detailImage: ImageMetadata;
 	alt: string;
+	featured?: boolean;
 }
 
 interface Props {
@@ -19,14 +20,20 @@ const { services } = Astro.props;
 
 <div class="service-grid">
 	{services.map((service, index) => (
-		<a class="service-card reveal" href={`/services#${service.slug}`} style={`--delay: ${index * 70}ms`}>
+		<a class:list={['service-card', 'reveal', { 'service-card--featured': service.featured }]} href={`/services#${service.slug}`} style={`--delay: ${index * 70}ms`}>
 			<div class="service-card__image">
-				<Photo src={service.detailImage} alt={service.alt} widths={[400, 800]} sizes="(max-width: 480px) 45vw, (max-width: 1000px) 90vw, 330px" />
+				<Photo
+					src={service.detailImage}
+					alt={service.alt}
+					widths={[400, 800]}
+					sizes="(max-width: 480px) 45vw, (max-width: 1000px) 90vw, 360px"
+				/>
 			</div>
 			<div class="service-card__copy">
-				<p class="service-card__label">{service.label}</p>
+				<p class="service-card__label"><span class="service-card__num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{service.label}</p>
 				<h3>{service.title}</h3>
-				<p>{service.text}</p>
+				<p class="service-card__text">{service.text}</p>
+				<span class="service-card__more">View service <span aria-hidden="true">→</span></span>
 			</div>
 		</a>
 	))}

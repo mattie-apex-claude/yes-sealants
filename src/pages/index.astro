@@ -5,6 +5,7 @@ import ProjectGallery from '../components/ProjectGallery.astro';
 import CTASection from '../components/CTASection.astro';
 import Photo from '../components/Photo.astro';
 import { site } from '../data/site';
+import Icon from '../components/Icon.astro';
 import { photo, projects, services } from '../data/siteContent';
 
 const steps = [
@@ -22,8 +23,9 @@ const steps = [
 	<section class="hero" id="top" aria-labelledby="hero-title">
 		<div class="hero__copy reveal">
 			<p class="eyebrow">Sealant specialists in Bradford</p>
-			<h1 id="hero-title">Sealant work<br />for every project.</h1>
-			<p class="hero__intro">Mastic and silicone sealing for homeowners, contractors and commercial projects. {site.areaLine} Choose a service to get started.</p>
+			<h1 id="hero-title">Precision sealing<br />built to last.</h1>
+			<p class="hero__location"><Icon name="pin" size={18} /><span>{site.areaLine}</span></p>
+			<p class="hero__intro">Mastic and silicone sealing for homeowners, contractors and commercial projects. Choose a service to get started.</p>
 			<div class="hero__actions">
 				<a class="button button--gray" href="/contact">Get a Quote <span aria-hidden="true">↗</span></a>
 				<a class="quiet-link" href="/our-work">See completed work <span aria-hidden="true">→</span></a>
@@ -31,9 +33,16 @@ const steps = [
 		</div>
 		<ul class="hero-tiles" aria-label="Choose a sealant service">
 			{services.map((tile, index) => (
-				<li class:list={['reveal-scale', { 'hero-tiles__wide': services.length % 2 === 1 && index === services.length - 1 }]} style={`--delay: ${index * 90}ms`}>
+				<li class:list={['reveal-scale', { 'hero-tile--featured': tile.featured }]} style={`--delay: ${index * 90}ms`}>
 					<a class="hero-tile" href={`/services#${tile.slug}`}>
-						<Photo src={tile.image} alt={tile.alt} widths={[400, 800]} sizes="(max-width: 1000px) 45vw, 340px" loading={index < 2 ? 'eager' : 'lazy'} fetchpriority={index < 2 ? 'high' : 'auto'} />
+						<Photo
+							src={tile.image}
+							alt={tile.alt}
+							widths={[400, 800]}
+							sizes="(max-width: 1000px) 45vw, 340px"
+							loading={index < 2 ? 'eager' : 'lazy'}
+							fetchpriority={index < 2 ? 'high' : 'auto'}
+						/>
 						<span class="hero-tile__label">{tile.title}<span aria-hidden="true">→</span></span>
 					</a>
 				</li>
@@ -67,7 +76,7 @@ const steps = [
 		<div class="container">
 			<div class="section-heading reveal">
 				<div><p class="eyebrow">Our services</p><h2 id="services-title">Sealant services<br /><em>for every project.</em></h2></div>
-				<p class="section-intro">Bathroom, window and door, internal, external and cut out and reseal work. Choose a service to see what’s included.</p>
+				<p class="section-intro">Bathroom, window and door, internal, external, cut out and reseal and commercial work. Choose a service to see what’s included.</p>
 			</div>
 			<ServiceGrid services={services} />
 		</div>
@@ -80,6 +89,10 @@ const steps = [
 				<p class="section-intro">A selection of bathroom, window, external, internal and reseal work.</p>
 			</div>
 			<ProjectGallery projects={projects.slice(0, 4)} />
+			<div class="section-cta reveal">
+				<a class="button button--primary" href="/our-work">View the full gallery <span aria-hidden="true">↗</span></a>
+				<p>{projects.length} project photos, filterable by service.</p>
+			</div>
 		</div>
 	</section>
 
@@ -120,7 +133,7 @@ const steps = [
 
 	<section class="areas-section" id="areas" aria-labelledby="areas-title">
 		<div class="container areas-layout">
-			<div class="areas-copy reveal"><p class="eyebrow eyebrow--light">Areas we cover</p><h2 id="areas-title">Bradford, West Yorkshire<br /><em>and surrounding areas.</em></h2><p>Based in Bradford, we work with homeowners, contractors and commercial clients in Leeds, Wakefield, Huddersfield, Halifax, Keighley, Shipley, Bingley, Ilkley and nearby towns across West Yorkshire. {site.outOfAreaLine}</p><a class="button button--gray" href="/areas-we-cover">See areas we cover <span aria-hidden="true">↗</span></a></div>
+			<div class="areas-copy reveal"><p class="eyebrow eyebrow--light">Areas we cover</p><h2 id="areas-title">Bradford, West Yorkshire<br /><em>and surrounding areas.</em></h2><p>Based in Bradford, we work with homeowners, contractors and commercial clients in Leeds, Wakefield, Huddersfield, Halifax, Keighley, Shipley, Bingley, Ilkley and nearby towns across West Yorkshire. {site.outOfAreaLine}</p><a class="button button--primary" href="/areas-we-cover">See areas we cover <span aria-hidden="true">↗</span></a></div>
 			<div class="areas-photo reveal-mask"><Photo src={photo('external', 'brick-facade.jpg')} alt="Brick building exterior with sealed window and door openings" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 600px" /></div>
 		</div>
 	</section>

@@ -53,6 +53,7 @@ export const services = [
 	},
 	{
 		slug: 'cut-out-reseal',
+		featured: true,
 		title: 'Cut Out & Reseal',
 		label: 'Remove & replace',
 		text: 'Worn, split or discoloured sealant cut out and replaced with a fresh, neat line.',
@@ -61,6 +62,17 @@ export const services = [
 		image: photo('bathrooms', 'bathroom-reseal.jpg'),
 		detailImage: photo('bathrooms', 'bathroom-hero.jpg'),
 		alt: 'Bath meeting a tiled wall with a clean sealant line',
+	},
+	{
+		slug: 'commercial',
+		title: 'Commercial',
+		label: 'Commercial & construction',
+		text: 'Sealant for contractors, developers and commercial properties, finished to a consistent standard.',
+		detail: 'Joints are prepared and tooled to a clean, consistent standard for contractors, developers and commercial properties, so the finish stays neat across the whole project. Available across Bradford and West Yorkshire.',
+		applications: ['New-build and construction projects', 'Window and door frame perimeters', 'Internal fit-out joints', 'External and building envelope joints'],
+		image: photo('external', 'commercial-build.jpg'),
+		detailImage: photo('external', 'commercial-build-detail.jpg'),
+		alt: 'New-build brick building with fitted windows and door frames',
 	},
 ];
 

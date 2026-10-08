@@ -10,7 +10,7 @@ npm run build    # production build to dist/
 
 ## Enquiry form
 
-The form posts JSON to `PUBLIC_ENQUIRY_ENDPOINT` (see `.env.example`), e.g. a Formspree form that forwards to yessealants@gmail.com. The endpoint is public by design and holds no credentials. Set it in the hosting provider's environment before building.
+`src/components/EnquiryForm.astro` posts JSON to the GoHighLevel inbound webhook set as `enquiryWebhook` in `src/data/site.ts`. No API keys are used. Payload fields: `fullName`, `phone`, `postcode`, `houseNumber`, `projectDetails`, `source`, `pageUrl`.
 
 ## Other notes
 
