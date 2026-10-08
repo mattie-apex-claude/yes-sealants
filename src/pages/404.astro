@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import CTASection from '../components/CTASection.astro';
+---
+
+<Layout
+	title="Page Not Found | Yes Sealants"
+	description="Sorry, we couldn’t find that page. Head back to the Yes Sealants homepage, browse our sealant services or get a quote."
+	noindex
+>
+	<section class="page-intro not-found" aria-labelledby="not-found-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Error 404</p>
+			<h1 id="not-found-title">Page<br /><span>not found.</span></h1>
+			<p>Sorry, we can’t find the page you’re looking for. It may have moved, or the address may be wrong.</p>
+			<div class="hero__actions">
+				<Button href="/" variant="gray">Back to Home <span aria-hidden="true">↗</span></Button>
+				<a class="quiet-link" href="/services">View our services <span aria-hidden="true">→</span></a>
+			</div>
+		</div>
+	</section>
+
+	<CTASection
+		id="not-found-quote"
+		eyebrow="Need sealant work?"
+		headingFirst="Get a"
+		headingSecond="quote."
+		subtitle="Tell us which service you need and where the work is. Not near us? Get in touch and we’ll see if we can help."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+		secondaryCta={{ text: 'See Our Work', href: '/our-work' }}
+	/>
+</Layout>

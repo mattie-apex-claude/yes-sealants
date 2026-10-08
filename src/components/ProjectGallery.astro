@@ -1,0 +1,144 @@
+---
+import { getImage } from 'astro:assets';
+import GalleryLightbox from './GalleryLightbox.astro';
+import Photo from './Photo.astro';
+
+interface Project {
+	image: ImageMetadata;
+	alt: string;
+	caption: string;
+	className: string;
+	category: string;
+}
+
+interface GalleryFilter {
+	slug: string;
+	label: string;
+}
+
+interface Props {
+	projects: Project[];
+	layout?: 'featured' | 'masonry';
+	filters?: GalleryFilter[];
+}
+
+const { projects, layout = 'featured', filters = [] } = Astro.props;
+
+const lightboxSources = layout === 'masonry'
+	? await Promise.all(projects.map((project) => getImage({ src: project.image, width: 1200, format: 'webp', quality: 78 })))
+	: [];
+---
+
+{layout === 'masonry' ? (
+	<div class="project-gallery" data-project-gallery>
+		<div class="filter-bar reveal" role="group" aria-label="Filter project photos">
+			{filters.map((filter, index) => (
+				<button
+					type="button"
+					class:list={['filter-btn', { active: index === 0 }]}
+					aria-pressed={index === 0 ? 'true' : 'false'}
+					data-gallery-filter={filter.slug}
+				>
+					{filter.label}
+				</button>
+			))}
+		</div>
+		<p class="gallery-count" role="status" aria-live="polite">Showing {projects.length} project photos</p>
+		<div class="gallery-columns reveal">
+			{projects.map((project, index) => (
+				<button
+					type="button"
+					class="gallery-tile lightbox-trigger"
+					data-category={project.category}
+					data-lightbox-src={lightboxSources[index].src}
+					data-lightbox-label={project.caption}
+					aria-label={`View ${project.caption}`}
+				>
+					<Photo src={project.image} alt={project.alt} widths={[400, 800]} sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 400px" />
+					<span class="tile-label">{project.caption}</span>
+				</button>
+			))}
+		</div>
+		<p class="empty-state" hidden>No project photos found for this service.</p>
+		<GalleryLightbox />
+	</div>
+) : (
+	<div class="project-grid">
+		{projects.map((project, index) => (
+			<figure class={`${project.className} reveal`} style={`--delay: ${index * 80}ms`}>
+				<div class="project__image">
+					<Photo src={project.image} alt={project.alt} widths={[400, 800]} sizes="(max-width: 760px) 50vw, 480px" />
+				</div>
+				<figcaption><span>{project.caption}</span><span aria-hidden="true">↗</span></figcaption>
+			</figure>
+		))}
+	</div>
+)}
+
+{layout === 'masonry' && (
+	<script>
+		function initProjectGallery() {
+			document.querySelectorAll<HTMLElement>('[data-project-gallery]').forEach((gallery) => {
+				if (gallery.dataset.filtersBound) return;
+				gallery.dataset.filtersBound = 'true';
+
+				const filters = Array.from(gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-filter]'));
+				const tiles = Array.from(gallery.querySelectorAll<HTMLButtonElement>('.gallery-tile'));
+				const emptyState = gallery.querySelector<HTMLElement>('.empty-state');
+				const count = gallery.querySelector<HTMLElement>('.gallery-count');
+
+				const applyFilter = (filter: string) => {
+					let visibleCount = 0;
+					tiles.forEach((tile) => {
+						const visible = filter === 'all' || tile.dataset.category === filter;
+						tile.hidden = !visible;
+						if (visible) visibleCount += 1;
+					});
+					if (emptyState) emptyState.hidden = visibleCount !== 0;
+					if (count) count.textContent = `Showing ${visibleCount} project ${visibleCount === 1 ? 'photo' : 'photos'}`;
+				};
+
+				filters.forEach((button) => {
+					button.addEventListener('click', () => {
+						filters.forEach((filterButton) => {
+							const active = filterButton === button;
+							filterButton.classList.toggle('active', active);
+							filterButton.setAttribute('aria-pressed', String(active));
+						});
+						applyFilter(button.dataset.galleryFilter ?? 'all');
+					});
+				});
+			});
+		}
+
+		initProjectGallery();
+		document.addEventListener('astro:page-load', initProjectGallery);
+	</script>
+)}
+
+<style>
+	.project-gallery { --gallery-gap: 20px; }
+	.filter-bar { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px; margin-bottom: 12px; }
+	.filter-btn { min-height: 44px; padding: 0 16px; border: 2px solid var(--gunmetal); border-radius: 999px; background: transparent; color: var(--brand); cursor: pointer; font: inherit; font-size: 12px; font-weight: 800; transition: background var(--motion), color var(--motion), transform var(--motion); }
+	.filter-btn:hover { transform: translateY(-2px); }
+	.filter-btn.active, .filter-btn:hover { background: var(--brand); border-color: var(--silver); color: var(--off-white); }
+	.gallery-count { margin: 0 0 18px; color: var(--muted); font-size: 11px; text-align: left; }
+	.gallery-columns { column-count: 3; column-gap: var(--gallery-gap); }
+	.gallery-tile { position: relative; display: block; width: 100%; break-inside: avoid; margin: 0 0 var(--gallery-gap); overflow: hidden; border: 1px solid var(--silver-soft); border-radius: 6px; padding: 0; background: var(--light-gray); cursor: zoom-in; font: inherit; text-align: left; }
+	.gallery-tile[hidden] { display: none; }
+	.gallery-tile img { display: block; width: 100%; height: auto; transition: transform 600ms cubic-bezier(.22, 1, .36, 1); }
+	.gallery-tile:hover img, .gallery-tile:focus-visible img { transform: scale(1.045); }
+	.tile-label { position: absolute; right: 10px; bottom: 10px; left: 10px; width: fit-content; max-width: calc(100% - 20px); padding: 7px 10px; border: 1px solid rgba(154,154,154,.6); border-radius: 3px; background: rgba(23,23,23,.88); color: white; font-size: 11px; font-weight: 700; line-height: 1.3; opacity: 0; transform: translateY(6px); transition: opacity var(--motion), transform var(--motion); }
+	.gallery-tile:hover .tile-label, .gallery-tile:focus-visible .tile-label { opacity: 1; transform: translateY(0); }
+	.empty-state { padding: 40px 0; color: var(--muted); text-align: center; }
+	@media (max-width: 900px) { .gallery-columns { column-count: 2; } }
+	@media (max-width: 600px) {
+		.project-gallery { --gallery-gap: 14px; }
+		.gallery-columns { column-count: 1; }
+		.gallery-tile img { max-height: 480px; object-fit: cover; }
+		.tile-label { opacity: 1; transform: none; }
+		.filter-bar { justify-content: flex-start; gap: 8px; margin-inline: calc(var(--gutter) * -1); padding: 0 var(--gutter) 8px; overflow-x: auto; flex-wrap: nowrap; }
+		.filter-btn { flex: 0 0 auto; }
+	}
+	@media (prefers-reduced-motion: reduce) { .filter-btn, .gallery-tile img, .tile-label { transition: none; } }
+</style>

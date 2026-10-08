@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import CTASection from '../components/CTASection.astro';
+import ServiceDetail from '../components/ServiceDetail.astro';
+import { services } from '../data/siteContent';
+import { breadcrumbSchema } from '../data/schema';
+import { site } from '../data/site';
+---
+
+<Layout
+	title="Sealant Services in Bradford & West Yorkshire | Yes Sealants"
+	description="Bathroom, window and door, internal and external sealant, plus cut out and reseal, from a Bradford sealant specialist covering West Yorkshire and surrounding areas."
+	schema={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Services', path: '/services' }])]}
+>
+	<section class="page-intro" aria-labelledby="services-page-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Services</p>
+			<h1 id="services-page-title">Mastic &amp; silicone<br />sealing for every project.</h1>
+			<p>Bathroom, window and door, internal and external sealant work, plus cut out and reseal, for homeowners, contractors and commercial projects. {site.areaLine} <a class="text-link" href="/areas-we-cover">Areas we cover</a>.</p>
+			<Button href="/contact" variant="gray">Get a Quote <span aria-hidden="true">↗</span></Button>
+		</div>
+	</section>
+
+	<nav class="service-jump" aria-label="Services on this page">
+		<div class="container service-jump__inner">
+			{services.map((service) => <a href={`#${service.slug}`}>{service.title}<span aria-hidden="true">↓</span></a>)}
+		</div>
+	</nav>
+
+	{services.map((service, index) => <ServiceDetail service={service} index={index} />)}
+
+	<CTASection
+		id="services-quote"
+		eyebrow="Contact Yes Sealants"
+		headingFirst="Request a"
+		headingSecond="quote."
+		subtitle="Tell us which service you need and where the work is. We’re based in Bradford and cover West Yorkshire and surrounding areas. Not near us? Get in touch and we’ll see if we can help."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+		secondaryCta={{ text: 'See Our Work', href: '/our-work' }}
+	/>
+</Layout>
+
+<style>
+	.service-jump { border-bottom: 1px solid var(--silver-soft); background: var(--light-gray); }
+	.service-jump__inner { display: flex; flex-wrap: wrap; gap: 0 30px; }
+	.service-jump a { display: flex; align-items: center; gap: 14px; padding: 16px 0; font-size: 13px; font-weight: 800; }
+	.service-jump a span { color: var(--muted); }
+	.service-jump a:hover { text-decoration: underline; text-underline-offset: 4px; }
+</style>

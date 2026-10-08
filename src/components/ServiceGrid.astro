@@ -1,0 +1,33 @@
+---
+import Photo from './Photo.astro';
+
+interface Service {
+	title: string;
+	slug: string;
+	label: string;
+	text: string;
+	detailImage: ImageMetadata;
+	alt: string;
+}
+
+interface Props {
+	services: Service[];
+}
+
+const { services } = Astro.props;
+---
+
+<div class="service-grid">
+	{services.map((service, index) => (
+		<a class="service-card reveal" href={`/services#${service.slug}`} style={`--delay: ${index * 70}ms`}>
+			<div class="service-card__image">
+				<Photo src={service.detailImage} alt={service.alt} widths={[400, 800]} sizes="(max-width: 480px) 45vw, (max-width: 1000px) 90vw, 330px" />
+			</div>
+			<div class="service-card__copy">
+				<p class="service-card__label">{service.label}</p>
+				<h3>{service.title}</h3>
+				<p>{service.text}</p>
+			</div>
+		</a>
+	))}
+</div>

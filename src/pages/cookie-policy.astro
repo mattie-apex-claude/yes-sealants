@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { breadcrumbSchema } from '../data/schema';
+import { site } from '../data/site';
+---
+
+<Layout
+	title="Cookie Policy | Yes Sealants"
+	description="Yes Sealants does not use analytics, advertising or tracking cookies on this website. Read what that means for you."
+	schema={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Cookie policy', path: '/cookie-policy' }])]}
+>
+	<section class="page-intro" aria-labelledby="cookie-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Legal</p>
+			<h1 id="cookie-title">Cookie <span>policy.</span></h1>
+			<p>Last updated 8 October 2026</p>
+		</div>
+	</section>
+
+	<section class="legal-section">
+		<div class="container legal">
+			<p>This policy explains how the Yes Sealants website uses cookies and similar technologies. Read it alongside our <a href="/privacy-policy">Privacy Policy</a>.</p>
+
+			<h2>1. What are cookies?</h2>
+			<p>Cookies are small text files that a website can store on your device. They are commonly used to make a site work, remember your choices or measure how it is used.</p>
+
+			<h2>2. Cookies we use</h2>
+			<p>This website does not set any cookies and does not store information on your device using local storage or similar technologies.</p>
+			<div class="table-wrap">
+				<table>
+					<thead><tr><th>Type</th><th>Used on this site?</th></tr></thead>
+					<tbody>
+						<tr><td>Strictly necessary cookies</td><td>None needed or set</td></tr>
+						<tr><td>Analytics or statistics cookies</td><td>No</td></tr>
+						<tr><td>Advertising or tracking cookies</td><td>No</td></tr>
+						<tr><td>Social media pixels or embedded content</td><td>No</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<p>The site’s fonts are hosted on our own website, so visiting it does not send a request to Google Fonts or similar services. The enquiry form sends the details you enter to us, and does not set cookies.</p>
+
+			<h2>3. Cookie consent</h2>
+			<p>Because we do not use any non-essential cookies, there is no cookie banner on this site. If we add analytics or other non-essential cookies in future, we will ask for your consent first, only load them if you agree, and update this policy.</p>
+
+			<h2>4. Third-party sites</h2>
+			<p>This website links to our <a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook</a> and <a href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram</a> pages and to WhatsApp. If you follow those links, those services may set their own cookies under their own policies. We do not control them.</p>
+
+			<h2>5. Managing cookies</h2>
+			<p>You can block or delete cookies in your browser settings at any time. Doing so will not affect how this website works.</p>
+
+			<h2>6. Contact us</h2>
+			<p>If you have questions about this policy, email <a href={site.emailHref}>{site.email}</a>.</p>
+		</div>
+	</section>
+</Layout>

@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+interface Props {
+	variant?: 'list' | 'socials';
+	class?: string;
+	socials?: boolean;
+}
+
+const { variant = 'list', class: className, socials = true } = Astro.props;
+const external = { target: '_blank', rel: 'noopener noreferrer' };
+---
+
+<ul class:list={['contact-links', `contact-links--${variant}`, className]}>
+	{variant !== 'socials' && (
+		<>
+			<li><a href={site.phoneHref}><Icon name="phone" /><span>Call {site.phoneDisplay}</span></a></li>
+			<li><a href={site.whatsappHref} {...external}><Icon name="whatsapp" /><span>WhatsApp us</span></a></li>
+			<li><a href={site.emailHref}><Icon name="mail" /><span>{site.email}</span></a></li>
+		</>
+	)}
+	{socials && <li><a href={site.facebook} {...external} aria-label="Yes Sealants on Facebook"><Icon name="facebook" /><span class:list={{ 'sr-only': variant === 'socials' }}>Facebook</span></a></li>}
+	{socials && <li><a href={site.instagram} {...external} aria-label="Yes Sealants on Instagram"><Icon name="instagram" /><span class:list={{ 'sr-only': variant === 'socials' }}>Instagram</span></a></li>}
+</ul>
+
+<style is:global>
+	.contact-links { display: flex; margin: 0; padding: 0; list-style: none; }
+	.contact-links a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: inherit; font-size: 14px; font-weight: 700; transition: color var(--motion), border-color var(--motion); }
+	.contact-links .icon { flex: 0 0 auto; color: var(--silver); transition: color var(--motion); }
+	.contact-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+	.contact-links a:hover .icon { color: currentColor; }
+	.contact-links--list { flex-direction: column; gap: 2px; }
+	.contact-links--socials { flex-wrap: wrap; gap: 10px; }
+	.contact-links--socials a { justify-content: center; width: 44px; padding: 0; border: 1px solid var(--silver); border-radius: 50%; }
+	.contact-links--socials a:hover { border-color: currentColor; text-decoration: none; }
+</style>

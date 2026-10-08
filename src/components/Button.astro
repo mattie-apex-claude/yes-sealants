@@ -1,0 +1,39 @@
+---
+interface Props {
+	href: string;
+	variant?: 'primary' | 'gray' | 'outline';
+}
+
+const { href, variant = 'primary' } = Astro.props;
+---
+
+<a class={`button button--${variant} magnetic`} href={href}>
+	<slot />
+</a>
+
+<script>
+	function initMagneticButtons() {
+		const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (!finePointer || reducedMotion) return;
+
+		document.querySelectorAll<HTMLElement>('.magnetic').forEach((button) => {
+			if (button.dataset.magneticBound) return;
+			button.dataset.magneticBound = 'true';
+			button.addEventListener('mousemove', (event) => {
+				const bounds = button.getBoundingClientRect();
+				const offsetX = event.clientX - bounds.left - bounds.width / 2;
+				const offsetY = event.clientY - bounds.top - bounds.height / 2;
+				button.style.transition = 'transform 60ms linear';
+				button.style.transform = `translate(${Math.max(-5, Math.min(5, offsetX * .12))}px, ${Math.max(-4, Math.min(4, offsetY * .18))}px)`;
+			});
+			button.addEventListener('mouseleave', () => {
+				button.style.transition = '';
+				button.style.transform = '';
+			});
+		});
+	}
+
+	initMagneticButtons();
+	document.addEventListener('astro:page-load', initMagneticButtons);
+</script>

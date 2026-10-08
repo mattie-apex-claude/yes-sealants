@@ -1,11 +1,137 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import ProjectGallery from '../components/ProjectGallery.astro';
+import CTASection from '../components/CTASection.astro';
+import Photo from '../components/Photo.astro';
+import { site } from '../data/site';
+import { photo, projects, services } from '../data/siteContent';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const steps = [
+	{ number: '01', title: 'Get in touch', text: 'Tell us what needs sealing and where the work is.' },
+	{ number: '02', title: 'Confirm the details', text: 'We confirm the scope, availability and next steps.' },
+	{ number: '03', title: 'Book a date', text: 'We agree a suitable day for the work.' },
+	{ number: '04', title: 'Work completed', text: 'The work is carried out and the area left tidy.' },
+];
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+	title="Sealant Specialist in Bradford, West Yorkshire | Yes Sealants"
+	description="Bradford sealant specialist covering West Yorkshire and surrounding areas. Mastic and silicone sealing for homeowners, contractors and commercial projects."
+>
+	<section class="hero" id="top" aria-labelledby="hero-title">
+		<div class="hero__copy reveal">
+			<p class="eyebrow">Sealant specialists in Bradford</p>
+			<h1 id="hero-title">Sealant work<br />for every project.</h1>
+			<p class="hero__intro">Mastic and silicone sealing for homeowners, contractors and commercial projects. {site.areaLine} Choose a service to get started.</p>
+			<div class="hero__actions">
+				<a class="button button--gray" href="/contact">Get a Quote <span aria-hidden="true">↗</span></a>
+				<a class="quiet-link" href="/our-work">See completed work <span aria-hidden="true">→</span></a>
+			</div>
+		</div>
+		<ul class="hero-tiles" aria-label="Choose a sealant service">
+			{services.map((tile, index) => (
+				<li class:list={['reveal-scale', { 'hero-tiles__wide': services.length % 2 === 1 && index === services.length - 1 }]} style={`--delay: ${index * 90}ms`}>
+					<a class="hero-tile" href={`/services#${tile.slug}`}>
+						<Photo src={tile.image} alt={tile.alt} widths={[400, 800]} sizes="(max-width: 1000px) 45vw, 340px" loading={index < 2 ? 'eager' : 'lazy'} fetchpriority={index < 2 ? 'high' : 'auto'} />
+						<span class="hero-tile__label">{tile.title}<span aria-hidden="true">→</span></span>
+					</a>
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<section class="quality" id="quality" aria-labelledby="quality-title">
+		<div class="quality__photo reveal-mask"><Photo src={photo('internal', 'interior-finish.jpg')} alt="Interior project surface and junction detail" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 50vw" /></div>
+		<div class="quality__copy reveal">
+			<p class="eyebrow">About us</p>
+			<h2 id="quality-title">Finishing details<br /><em>done properly.</em></h2>
+			<p>At Yes Sealants, we specialise in high-quality sealant and mastic applications, delivering clean, precise and long-lasting finishes for residential, commercial and construction projects.</p>
+			<p>We understand that the finishing details matter. That’s why we take pride in our workmanship, paying close attention to every joint, edge and finish to ensure a professional result on every project.</p>
+			<p>Whether you’re a homeowner looking for the perfect finishing touch or a contractor looking for a reliable sealing specialist, Yes Sealants is committed to delivering a professional service from start to finish.</p>
+			<p>{site.areaLine} See the <a class="text-link" href="/areas-we-cover">areas we cover</a>.</p>
+			<a class="underlined-link" href="/services">View our services <span aria-hidden="true">↗</span></a>
+		</div>
+	</section>
+
+	<section class="trust-strip" aria-label="Yes Sealants service qualities">
+		<div class="container trust-strip__inner">
+			<p><span aria-hidden="true">✓</span> Based in Bradford, West Yorkshire</p>
+			<p><span aria-hidden="true">✓</span> Residential and commercial</p>
+			<p><span aria-hidden="true">✓</span> Joints prepared before sealing</p>
+			<p><span aria-hidden="true">✓</span> Neat, tooled finish</p>
+		</div>
+	</section>
+
+	<section class="section services-section" id="services" aria-labelledby="services-title">
+		<div class="container">
+			<div class="section-heading reveal">
+				<div><p class="eyebrow">Our services</p><h2 id="services-title">Sealant services<br /><em>for every project.</em></h2></div>
+				<p class="section-intro">Bathroom, window and door, internal, external and cut out and reseal work. Choose a service to see what’s included.</p>
+			</div>
+			<ServiceGrid services={services} />
+		</div>
+	</section>
+
+	<section class="section projects-section" id="work" aria-labelledby="work-title">
+		<div class="container">
+			<div class="section-heading reveal">
+				<div><p class="eyebrow">Our work</p><h2 id="work-title">Recent sealant<br /><em>projects.</em></h2></div>
+				<p class="section-intro">A selection of bathroom, window, external, internal and reseal work.</p>
+			</div>
+			<ProjectGallery projects={projects.slice(0, 4)} />
+		</div>
+	</section>
+
+	<section class="why-section" id="why" aria-labelledby="why-title">
+		<div class="container why-layout">
+			<div class="why-photo reveal-mask"><Photo src={photo('bathrooms', 'bathroom-fitted.jpg')} alt="Shower enclosure with a clean tray and wall junction" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 480px" /></div>
+			<div class="why-content">
+				<div class="why-heading reveal"><p class="eyebrow eyebrow--light">Our workmanship</p><h2 id="why-title">Preparation first.<br /><em>Neat finish always.</em></h2></div>
+			<div class="why-points">
+				<article class="why-point reveal"><span>01</span><h3>Prepare the surface</h3><p>Remove failed sealant where needed and clean the joint before resealing.</p></article>
+				<article class="why-point reveal" style="--delay: 90ms"><span>02</span><h3>Apply carefully</h3><p>Use sealant suited to the joint and tool it to a clean, even line.</p></article>
+				<article class="why-point reveal" style="--delay: 180ms"><span>03</span><h3>Check the finish</h3><p>Inspect the completed joint before the job is signed off.</p></article>
+			</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="process-section" id="how" aria-labelledby="process-title">
+		<div class="container">
+			<div class="section-heading reveal">
+				<div><p class="eyebrow">How it works</p><h2 id="process-title">From first enquiry<br /><em>to finished seal.</em></h2></div>
+				<p class="section-intro">A simple process, with the work and timing agreed before we begin.</p>
+			</div>
+			<div class="process-layout">
+				<div class="process-photo reveal-mask"><Photo src={photo('bathrooms', 'bathroom-tile.jpg')} alt="Tiled bath installation with carefully finished perimeter joints" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 400px" /></div>
+				<ol class="process-list">
+					{steps.map((step, index) => (
+						<li class="process-step reveal" style={`--delay: ${index * 75}ms`}>
+							<span class="process-step__number">{step.number}</span>
+							<h3>{step.title}</h3>
+							<p>{step.text}</p>
+						</li>
+					))}
+				</ol>
+			</div>
+		</div>
+	</section>
+
+	<section class="areas-section" id="areas" aria-labelledby="areas-title">
+		<div class="container areas-layout">
+			<div class="areas-copy reveal"><p class="eyebrow eyebrow--light">Areas we cover</p><h2 id="areas-title">Bradford, West Yorkshire<br /><em>and surrounding areas.</em></h2><p>Based in Bradford, we work with homeowners, contractors and commercial clients in Leeds, Wakefield, Huddersfield, Halifax, Keighley, Shipley, Bingley, Ilkley and nearby towns across West Yorkshire. {site.outOfAreaLine}</p><a class="button button--gray" href="/areas-we-cover">See areas we cover <span aria-hidden="true">↗</span></a></div>
+			<div class="areas-photo reveal-mask"><Photo src={photo('external', 'brick-facade.jpg')} alt="Brick building exterior with sealed window and door openings" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 600px" /></div>
+		</div>
+	</section>
+
+	<CTASection
+		id="contact"
+		headingFirst="Get a"
+		headingSecond="quote."
+		subtitle="Tell us which service you need and where the work is. We’re based in Bradford and cover West Yorkshire and surrounding areas. Not near us? Get in touch and we’ll see if we can help."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+		secondaryCta={{ text: 'View project photos', href: '/our-work' }}
+		image={photo('bathrooms', 'bathroom-sealant-detail.jpg')}
+	/>
 </Layout>

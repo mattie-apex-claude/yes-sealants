@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { breadcrumbSchema } from '../data/schema';
+import { site } from '../data/site';
+---
+
+<Layout
+	title="Privacy Policy | Yes Sealants"
+	description="How Yes Sealants collects, uses and protects your personal information when you contact us or use the enquiry form on this website."
+	schema={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Privacy policy', path: '/privacy-policy' }])]}
+>
+	<section class="page-intro" aria-labelledby="privacy-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Legal</p>
+			<h1 id="privacy-title">Privacy <span>policy.</span></h1>
+			<p>Last updated 8 October 2026</p>
+		</div>
+	</section>
+
+	<section class="legal-section">
+		<div class="container legal">
+			<p>This policy explains how Yes Sealants (“we”, “us”) collects and uses personal information when you use this website, send us an enquiry or contact us. We are a sealant business based in Bradford, West Yorkshire, and we are responsible for the personal information described here (the “data controller” under UK data protection law).</p>
+			<p>You can contact us about this policy or your information at <a href={site.emailHref}>{site.email}</a>.</p>
+
+			<h2>1. Information we collect</h2>
+			<p>When you send an enquiry through the website form we collect:</p>
+			<ul>
+				<li>your name</li>
+				<li>your mobile number</li>
+				<li>your postcode and house number (so we know where the work is)</li>
+				<li>the details you give us about your project</li>
+			</ul>
+			<p>If you contact us by phone, WhatsApp, email or social media, we also keep the messages and any photos or details you send us, along with your contact details.</p>
+			<p>Our website hosting provider may automatically record technical information such as your IP address, browser type and the pages requested in server logs. We do not use this to identify you personally.</p>
+
+			<h2>2. Why we use your information</h2>
+			<ul>
+				<li><strong>To respond to your enquiry and prepare a quote.</strong> Lawful basis: taking steps at your request before entering into a contract, and our legitimate interests in running our business.</li>
+				<li><strong>To carry out and manage the work, including arranging dates and contacting you about it.</strong> Lawful basis: performing our contract with you.</li>
+				<li><strong>To keep business and accounting records.</strong> Lawful basis: legal obligation.</li>
+				<li><strong>To keep the website secure and reduce spam.</strong> Lawful basis: our legitimate interests.</li>
+			</ul>
+			<p>We only use your details to deal with your enquiry or job. We do not send marketing messages and we do not sell your information.</p>
+
+			<h2>3. Website analytics and cookies</h2>
+			<p>This website does not use analytics, advertising or tracking cookies. See our <a href="/cookie-policy">Cookie Policy</a> for details.</p>
+
+			<h2>4. Who we share information with</h2>
+			<p>We share information only with service providers who help us run the website and our business, and only as needed:</p>
+			<ul>
+				<li>the online form service that receives your enquiry and passes it to our email inbox</li>
+				<li>our email provider (Google Mail), which holds the enquiry once received</li>
+				<li>our website hosting provider</li>
+				<li>messaging and phone services you choose to use to contact us, such as WhatsApp</li>
+			</ul>
+			<p>We may also disclose information if the law requires it. Some of these providers may process information outside the UK. Where they do, we expect them to use safeguards recognised by UK data protection law.</p>
+
+			<h2>5. How long we keep your information</h2>
+			<ul>
+				<li>Enquiries that do not lead to work: up to 12 months, then deleted.</li>
+				<li>Customers: for as long as needed to complete the work and deal with any follow-up, then for the period required for accounting records (generally six years).</li>
+			</ul>
+
+			<h2>6. Security</h2>
+			<p>The website uses HTTPS, and enquiries are sent to an access-restricted email account. We take reasonable steps to protect your information, but no online service can be guaranteed to be completely secure.</p>
+
+			<h2>7. Your rights</h2>
+			<p>Under UK data protection law you have the right to:</p>
+			<ul>
+				<li>ask for a copy of the information we hold about you</li>
+				<li>ask us to correct information that is wrong or incomplete</li>
+				<li>ask us to delete your information</li>
+				<li>ask us to restrict how we use your information</li>
+				<li>object to us using your information where we rely on legitimate interests</li>
+				<li>ask for your information in a portable format</li>
+			</ul>
+			<p>To use any of these rights, email <a href={site.emailHref}>{site.email}</a>. We will reply within one month. We do not make decisions about you using automated processing.</p>
+
+			<h2>8. Complaints</h2>
+			<p>If you are unhappy with how we have handled your information, please contact us first. You can also complain to the Information Commissioner’s Office (ICO) at <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer">ico.org.uk/make-a-complaint</a> or on 0303 123 1113.</p>
+
+			<h2>9. Children</h2>
+			<p>Our website and services are not aimed at children, and we do not knowingly collect information from anyone under 18.</p>
+
+			<h2>10. Links to other sites</h2>
+			<p>This website links to our <a href={site.facebook} target="_blank" rel="noopener noreferrer">Facebook</a> and <a href={site.instagram} target="_blank" rel="noopener noreferrer">Instagram</a> pages and to WhatsApp. Those services have their own privacy policies, which apply when you use them.</p>
+
+			<h2>11. Changes to this policy</h2>
+			<p>We may update this policy from time to time. The date at the top shows when it was last changed.</p>
+		</div>
+	</section>
+</Layout>

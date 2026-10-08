@@ -1,0 +1,205 @@
+---
+import { site } from '../data/site';
+
+interface Field {
+	id: string;
+	name: string;
+	label: string;
+	type: 'text' | 'tel';
+	autocomplete: string;
+	inputmode?: 'tel';
+	autocapitalize?: 'characters';
+	maxlength: number;
+	hint: string;
+}
+
+const fields: Field[] = [
+	{ id: 'name', name: 'name', label: 'Name', type: 'text', autocomplete: 'name', maxlength: 80, hint: '' },
+	{ id: 'mobile', name: 'mobile', label: 'Mobile', type: 'tel', autocomplete: 'tel', inputmode: 'tel', maxlength: 20, hint: 'UK mobile, e.g. 07950 586517' },
+	{ id: 'postcode', name: 'postcode', label: 'Postcode', type: 'text', autocomplete: 'postal-code', autocapitalize: 'characters', maxlength: 9, hint: 'Where the work is needed' },
+	{ id: 'house-number', name: 'house_number', label: 'House number', type: 'text', autocomplete: 'off', maxlength: 30, hint: 'Number or house name' },
+];
+---
+
+<div class="enquiry" data-enquiry>
+	<form class="enquiry__form" method="post" action={site.enquiryEndpoint || '/contact'} data-endpoint={site.enquiryEndpoint} novalidate aria-describedby="enquiry-privacy">
+		<div class="enquiry__summary" data-summary role="alert" tabindex="-1" hidden></div>
+		<input type="hidden" name="_subject" value="New website enquiry - Yes Sealants" />
+		<div class="enquiry__grid">
+			{fields.map((field) => (
+				<div class="field" data-field>
+					<label for={field.id}>{field.label} <span class="field__req" aria-hidden="true">*</span></label>
+					<input
+						id={field.id}
+						name={field.name}
+						type={field.type}
+						autocomplete={field.autocomplete}
+						inputmode={field.inputmode}
+						autocapitalize={field.autocapitalize}
+						maxlength={field.maxlength}
+						aria-required="true"
+						aria-describedby={`${field.id}-error${field.hint ? ` ${field.id}-hint` : ''}`}
+					/>
+					{field.hint && <p class="field__hint" id={`${field.id}-hint`}>{field.hint}</p>}
+					<p class="field__error" id={`${field.id}-error`} hidden></p>
+				</div>
+			))}
+			<div class="field field--full" data-field>
+				<label for="details">Details about the project <span class="field__req" aria-hidden="true">*</span></label>
+				<textarea id="details" name="message" rows="6" maxlength="2000" aria-required="true" aria-describedby="details-error details-hint"></textarea>
+				<p class="field__hint" id="details-hint">Which service you need, what needs sealing and any timings.</p>
+				<p class="field__error" id="details-error" hidden></p>
+			</div>
+		</div>
+		<div class="enquiry__trap" aria-hidden="true">
+			<label>Leave this field empty<input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+		</div>
+		<button class="button button--primary enquiry__submit" type="submit"><span data-label>Send enquiry</span> <span aria-hidden="true">↗</span></button>
+		<p class="enquiry__privacy" id="enquiry-privacy">By sending this enquiry you agree to us using your details to respond to you, as explained in our <a class="text-link" href="/privacy-policy">Privacy Policy</a>. Fields marked * are required.</p>
+	</form>
+	<div class="enquiry__success" data-success role="status" tabindex="-1" hidden>
+		<h2>Thanks, we’ve got your enquiry.</h2>
+		<p>We’ll get back to you on <strong data-success-mobile>your mobile</strong> as soon as we can. If it’s urgent, call <a class="text-link" href={site.phoneHref}>{site.phoneDisplay}</a> or message us on <a class="text-link" href={site.whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp</a>.</p>
+	</div>
+</div>
+
+<script define:vars={{ phoneDisplay: site.phoneDisplay, phoneHref: site.phoneHref, email: site.email, emailHref: site.emailHref }}>
+	const root = document.querySelector('[data-enquiry]');
+	if (root) {
+		const form = root.querySelector('form');
+		const summary = root.querySelector('[data-summary]');
+		const success = root.querySelector('[data-success]');
+		const submit = form.querySelector('button[type="submit"]');
+		const label = submit.querySelector('[data-label]');
+
+		const rules = {
+			name: (value) => value.trim().length >= 2 ? '' : 'Please enter your name.',
+			mobile: (value) => /^(?:\+44|0044|0)7\d{9}$/.test(value.replace(/[\s\-().]/g, '')) ? '' : 'Please enter a valid UK mobile number, like 07950 586517.',
+			postcode: (value) => /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i.test(value.trim()) ? '' : 'Please enter a valid UK postcode, like BD1 1AA.',
+			house_number: (value) => value.trim().length >= 1 ? '' : 'Please enter your house number or name.',
+			message: (value) => value.trim().length >= 10 ? '' : 'Please tell us a little about the project (at least 10 characters).',
+		};
+
+		const controlFor = (name) => form.elements[name];
+
+		const setError = (control, message) => {
+			const field = control.closest('[data-field]');
+			const error = field.querySelector('.field__error');
+			error.textContent = message;
+			error.hidden = !message;
+			field.classList.toggle('has-error', Boolean(message));
+			if (message) control.setAttribute('aria-invalid', 'true');
+			else control.removeAttribute('aria-invalid');
+		};
+
+		const validate = (name) => {
+			const control = controlFor(name);
+			const message = rules[name](control.value);
+			setError(control, message);
+			return !message;
+		};
+
+		const formatPostcode = (value) => {
+			const compact = value.toUpperCase().replace(/\s+/g, '');
+			return compact.length > 3 ? `${compact.slice(0, -3)} ${compact.slice(-3)}` : compact;
+		};
+
+		Object.keys(rules).forEach((name) => {
+			const control = controlFor(name);
+			control.addEventListener('blur', () => {
+				if (name === 'postcode' && control.value.trim() && rules.postcode(control.value) === '') control.value = formatPostcode(control.value);
+				if (control.value.trim() || control.closest('[data-field]').classList.contains('has-error')) validate(name);
+			});
+			control.addEventListener('input', () => {
+				if (control.closest('[data-field]').classList.contains('has-error')) validate(name);
+			});
+		});
+
+		const showSummary = (html) => {
+			summary.innerHTML = html;
+			summary.hidden = false;
+			summary.focus();
+		};
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			summary.hidden = true;
+
+			if (form.elements._gotcha.value) {
+				form.hidden = true;
+				success.hidden = false;
+				return;
+			}
+
+			const invalid = Object.keys(rules).filter((name) => !validate(name));
+			if (invalid.length) {
+				const count = invalid.length;
+				showSummary(`<strong>Please check ${count === 1 ? 'one field' : `${count} fields`}.</strong> Fix the highlighted ${count === 1 ? 'field' : 'fields'} and send again.`);
+				controlFor(invalid[0]).focus();
+				return;
+			}
+
+			const data = {
+				_subject: form.elements._subject.value,
+				name: form.elements.name.value.trim(),
+				mobile: form.elements.mobile.value.trim(),
+				postcode: formatPostcode(form.elements.postcode.value),
+				house_number: form.elements.house_number.value.trim(),
+				message: form.elements.message.value.trim(),
+			};
+
+			submit.disabled = true;
+			form.setAttribute('aria-busy', 'true');
+			label.textContent = 'Sending…';
+
+			try {
+				const endpoint = form.dataset.endpoint;
+				if (!endpoint) throw new Error('Enquiry endpoint is not configured');
+				const response = await fetch(endpoint, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+					body: JSON.stringify(data),
+				});
+				if (!response.ok) throw new Error(`Enquiry failed (${response.status})`);
+				success.querySelector('[data-success-mobile]').textContent = data.mobile;
+				form.hidden = true;
+				success.hidden = false;
+				success.focus();
+			} catch (error) {
+				console.error(error);
+				showSummary(`<strong>Sorry, your enquiry didn’t send.</strong> Please try again, or call <a href="${phoneHref}">${phoneDisplay}</a> or email <a href="${emailHref}">${email}</a>.`);
+			} finally {
+				submit.disabled = false;
+				form.removeAttribute('aria-busy');
+				label.textContent = 'Send enquiry';
+			}
+		});
+	}
+</script>
+
+<style>
+	.enquiry__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 18px; }
+	.field { min-width: 0; }
+	.field--full { grid-column: 1 / -1; }
+	.field label { display: block; margin-bottom: 8px; color: var(--brand); font-size: 14px; font-weight: 800; }
+	.field__req { color: var(--gunmetal); }
+	.field input, .field textarea { display: block; width: 100%; min-height: 52px; padding: 13px 14px; border: 2px solid var(--silver); border-radius: 4px; background: var(--off-white); color: var(--brand); font: inherit; font-size: 16px; line-height: 1.4; transition: border-color var(--motion), box-shadow var(--motion); }
+	.field textarea { min-height: 150px; resize: vertical; }
+	.field input:hover, .field textarea:hover { border-color: var(--gunmetal); }
+	.field input:focus, .field textarea:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(154, 154, 154, .45); }
+	.field__hint { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+	.field__error { margin-top: 6px; color: #a32020; font-size: 13px; font-weight: 700; line-height: 1.4; }
+	.field.has-error input, .field.has-error textarea { border-color: #a32020; }
+	.enquiry__summary { margin-bottom: 22px; padding: 14px 16px; border: 2px solid #a32020; border-radius: 4px; background: #fbf3f3; color: #7a1717; font-size: 14px; line-height: 1.5; }
+	.enquiry__summary :global(a) { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+	.enquiry__trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+	.enquiry__submit { width: 100%; margin-top: 24px; cursor: pointer; }
+	.enquiry__submit:disabled { opacity: .7; cursor: progress; transform: none; }
+	.enquiry__privacy { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+	.enquiry__success { padding: 28px; border: 1px solid var(--silver); border-radius: 6px; background: var(--light-gray); }
+	.enquiry__success:focus { outline: none; }
+	.enquiry__success h2 { margin-bottom: 12px; font-size: clamp(24px, 3vw, 32px); }
+	.enquiry__success p { color: var(--charcoal); }
+	@media (min-width: 600px) { .enquiry__submit { width: auto; min-width: 240px; } }
+	@media (max-width: 599px) { .enquiry__grid { grid-template-columns: 1fr; } }
+</style>

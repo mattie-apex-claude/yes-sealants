@@ -1,0 +1,111 @@
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Project image viewer" tabindex="-1">
+	<button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close image viewer">
+		<span aria-hidden="true">&times;</span>
+	</button>
+	<button type="button" class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous image">
+		<span aria-hidden="true">&larr;</span>
+	</button>
+	<div class="lightbox-stage">
+		<img id="lightbox-image" alt="" />
+		<p class="lightbox-label" id="lightbox-label"></p>
+		<p class="lightbox-counter" id="lightbox-counter"></p>
+	</div>
+	<button type="button" class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next image">
+		<span aria-hidden="true">&rarr;</span>
+	</button>
+</div>
+
+<script>
+	function initGalleryLightbox() {
+		const lightbox = document.getElementById('lightbox');
+		const image = document.getElementById('lightbox-image') as HTMLImageElement | null;
+		const label = document.getElementById('lightbox-label');
+		const counter = document.getElementById('lightbox-counter');
+		const closeButton = document.getElementById('lightbox-close') as HTMLButtonElement | null;
+		const previousButton = document.getElementById('lightbox-prev');
+		const nextButton = document.getElementById('lightbox-next');
+		if (!lightbox || !image || !label || !counter || !closeButton || !previousButton || !nextButton || lightbox.dataset.bound) return;
+		lightbox.dataset.bound = 'true';
+
+		const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('.lightbox-trigger'));
+		let currentIndex = 0;
+		let previousFocus: HTMLElement | null = null;
+		let touchStartX = 0;
+
+		const visibleTriggers = () => triggers.filter((trigger) => !trigger.hidden && trigger.getClientRects().length > 0);
+
+		const show = (requestedIndex: number) => {
+			const visible = visibleTriggers();
+			if (!visible.length) return;
+			currentIndex = (requestedIndex + visible.length) % visible.length;
+			const trigger = visible[currentIndex];
+			image.src = trigger.dataset.lightboxSrc ?? '';
+			image.alt = trigger.querySelector('img')?.alt ?? '';
+			label.textContent = trigger.dataset.lightboxLabel ?? '';
+			counter.textContent = `${currentIndex + 1} / ${visible.length}`;
+		};
+
+		const open = (trigger: HTMLButtonElement) => {
+			const visible = visibleTriggers();
+			const index = visible.indexOf(trigger);
+			if (index < 0) return;
+			previousFocus = trigger;
+			show(index);
+			lightbox.classList.add('open');
+			lightbox.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('lightbox-open');
+			closeButton.focus();
+		};
+
+		const close = () => {
+			lightbox.classList.remove('open');
+			lightbox.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('lightbox-open');
+			previousFocus?.focus();
+		};
+
+		triggers.forEach((trigger) => trigger.addEventListener('click', () => open(trigger)));
+		closeButton.addEventListener('click', close);
+		previousButton.addEventListener('click', () => show(currentIndex - 1));
+		nextButton.addEventListener('click', () => show(currentIndex + 1));
+		lightbox.addEventListener('click', (event) => {
+			if (event.target === lightbox) close();
+		});
+		document.addEventListener('keydown', (event) => {
+			if (!lightbox.classList.contains('open')) return;
+			if (event.key === 'Escape') close();
+			if (event.key === 'ArrowLeft') show(currentIndex - 1);
+			if (event.key === 'ArrowRight') show(currentIndex + 1);
+		});
+		lightbox.addEventListener('touchstart', (event) => {
+			touchStartX = event.touches[0].clientX;
+		}, { passive: true });
+		lightbox.addEventListener('touchend', (event) => {
+			const change = event.changedTouches[0].clientX - touchStartX;
+			if (Math.abs(change) > 50) show(currentIndex + (change < 0 ? 1 : -1));
+		}, { passive: true });
+	}
+
+	initGalleryLightbox();
+	document.addEventListener('astro:page-load', initGalleryLightbox);
+</script>
+
+<style>
+	.lightbox { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; background: rgba(23,23,23,.96); opacity: 0; visibility: hidden; transition: opacity 350ms ease, visibility 350ms ease; }
+	.lightbox.open { opacity: 1; visibility: visible; }
+	.lightbox-stage { position: relative; display: flex; max-width: min(1100px, 90vw); max-height: 84vh; flex-direction: column; align-items: center; gap: 12px; transform: scale(.97); transition: transform 350ms cubic-bezier(.22,1,.36,1); }
+	.lightbox.open .lightbox-stage { transform: scale(1); }
+	.lightbox-stage img { width: auto; height: auto; max-width: 100%; max-height: 74vh; object-fit: contain; border: 2px solid white; border-radius: 4px; }
+	.lightbox-label, .lightbox-counter { margin: 0; color: white; text-align: center; }
+	.lightbox-label { font-size: 14px; font-weight: 700; }
+	.lightbox-counter { color: var(--silver); font-size: 12px; }
+	.lightbox-close, .lightbox-nav { position: absolute; z-index: 1; display: grid; place-items: center; width: 48px; height: 48px; border: 2px solid white; border-radius: 50%; background: rgba(255,255,255,.1); color: white; cursor: pointer; transition: background 180ms ease, transform 180ms ease; }
+	.lightbox-close:hover, .lightbox-nav:hover { transform: scale(1.06); background: rgba(255,255,255,.22); }
+	.lightbox-close { top: 20px; right: 20px; font-size: 24px; }
+	.lightbox-nav { top: 50%; transform: translateY(-50%); font-size: 20px; }
+	.lightbox-nav:hover { transform: translateY(-50%) scale(1.06); }
+	.lightbox-prev { left: 20px; }
+	.lightbox-next { right: 20px; }
+	@media (max-width: 700px) { .lightbox-close { top: 12px; right: 12px; } .lightbox-prev { left: 8px; } .lightbox-next { right: 8px; } }
+	@media (prefers-reduced-motion: reduce) { .lightbox, .lightbox-stage, .lightbox-close, .lightbox-nav { transition: none; } }
+</style>

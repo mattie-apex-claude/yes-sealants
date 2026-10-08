@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectGallery from '../components/ProjectGallery.astro';
+import CTASection from '../components/CTASection.astro';
+import { projects, services } from '../data/siteContent';
+import { breadcrumbSchema } from '../data/schema';
+
+const filters = [
+	{ slug: 'all', label: 'All work' },
+	...services
+		.filter((service) => projects.some((project) => project.category === service.slug))
+		.map((service) => ({ slug: service.slug, label: service.title })),
+];
+---
+
+<Layout
+	title="Our Sealant Work in Bradford & West Yorkshire | Yes Sealants"
+	description="Project photos of bathroom, window and door, internal, external and cut out and reseal work by Yes Sealants, a Bradford sealant specialist covering West Yorkshire."
+	schema={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Our work', path: '/our-work' }])]}
+>
+	<section class="page-intro work-intro" aria-labelledby="work-page-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Our work</p>
+			<h1 id="work-page-title">Completed<br /><span>sealant work.</span></h1>
+			<p>Bathrooms, windows and doors, internal and external sealant, and cut out and reseal work.</p>
+		</div>
+	</section>
+
+	<section class="work-gallery-section" aria-label="Yes Sealants project photographs">
+		<div class="container">
+			<div class="gallery-heading reveal">
+				<p class="eyebrow">Browse by service</p>
+				<h2>Recent project photos</h2>
+			</div>
+			<ProjectGallery projects={projects} layout="masonry" filters={filters} />
+		</div>
+	</section>
+
+	<CTASection
+		id="work-quote"
+		eyebrow="Contact Yes Sealants"
+		headingFirst="Request a"
+		headingSecond="quote."
+		subtitle="Tell us which service you need and where the work is. We’re based in Bradford and cover West Yorkshire and surrounding areas. Not near us? Get in touch and we’ll see if we can help."
+		primaryCta={{ text: 'View Services', href: '/services' }}
+		secondaryCta={{ text: 'Get a Quote', href: '/contact' }}
+	/>
+</Layout>
+
+<style>
+	.work-intro { padding-block: clamp(40px, 5vw, 64px); }
+	.work-intro h1 { font-size: clamp(42px, 5vw, 68px); }
+	.work-intro h1 span { color: var(--silver); }
+	.work-intro__inner > p:not(.eyebrow) { margin-top: 14px; }
+	.work-gallery-section { padding-block: clamp(32px, 4vw, 52px); background: var(--off-white); }
+	.gallery-heading { margin-bottom: 20px; }
+	.gallery-heading .eyebrow { margin-bottom: 10px; }
+	.gallery-heading h2 { font-size: clamp(26px, 2.8vw, 36px); }
+</style>

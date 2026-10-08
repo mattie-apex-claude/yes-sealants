@@ -1,0 +1,173 @@
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/images/**/*.{jpg,jpeg}', { eager: true });
+
+export const photo = (category: string, filename: string): ImageMetadata => {
+	const match = images[`../assets/images/${category}/${filename}`];
+	if (!match) throw new Error(`Missing image: ${category}/${filename}`);
+	return match.default;
+};
+
+export const services = [
+	{
+		slug: 'bathrooms',
+		title: 'Bathrooms',
+		label: 'Bathrooms & wet areas',
+		text: 'Resealing for baths, shower trays, screens, basins and tiled wet areas.',
+		detail: 'Failed silicone is removed where needed. The joint is prepared before new sealant is applied around baths, shower trays, screens, basins and tiled wet areas. Bathroom sealant and resealing in Bradford and across West Yorkshire.',
+		applications: ['Bath and shower tray perimeters', 'Shower screens and enclosures', 'Basins and sanitaryware', 'Tiled wet-area junctions'],
+		image: photo('bathrooms', 'bathroom-shower.jpg'),
+		detailImage: photo('bathrooms', 'bathroom-sealant-detail.jpg'),
+		alt: 'Tiled bathroom and shower tray ready for a clean sealant finish',
+	},
+	{
+		slug: 'windows-doors',
+		title: 'Windows & Doors',
+		label: 'Frames & thresholds',
+		text: 'Mastic sealing where window and door frames meet the surrounding surface.',
+		detail: 'Sealant is applied around window frames, doors and thresholds after the joint has been checked and prepared for a neat, even finish. Window and door sealant for homes and commercial properties in Bradford and West Yorkshire.',
+		applications: ['Window-frame perimeters', 'Door frames and thresholds', 'Internal and external frame joints', 'Finishing around openings'],
+		image: photo('windows-and-doors', 'window-frame.jpg'),
+		detailImage: photo('windows-and-doors', 'front-door.jpg'),
+		alt: 'New home windows and door with exterior frame detail',
+	},
+	{
+		slug: 'internal-sealant',
+		title: 'Internal Sealant',
+		label: 'Interior finishing',
+		text: 'Neat sealant lines around worktops, splashbacks, floors and skirting.',
+		detail: 'Internal sealant finishes the joints between worktops, splashbacks, floors, skirting and other surfaces. Each joint is prepared and tooled for a clean edge. Suitable for homes, commercial interiors and fit-out work.',
+		applications: ['Worktops and splashbacks', 'Floor and skirting junctions', 'Internal trims and frames', 'Joints between finished surfaces'],
+		image: photo('internal', 'interior-worktop.jpeg'),
+		detailImage: photo('internal', 'interior-junction.jpg'),
+		alt: 'Interior worktop and wall junction ready for sealant finishing',
+	},
+	{
+		slug: 'external-sealant',
+		title: 'External Sealant',
+		label: 'Exterior joints',
+		text: 'Sealant for external window and door frames, wall junctions and exposed joints.',
+		detail: 'External joints face weather and movement. We prepare suitable joints and apply sealant around frames, openings and wall junctions, for homes and commercial buildings in Bradford, Leeds, Huddersfield and surrounding areas.',
+		applications: ['External window and door perimeters', 'Wall and frame junctions', 'Exterior movement joints', 'Weather-exposed openings'],
+		image: photo('external', 'brick-facade.jpg'),
+		detailImage: photo('external', 'exterior-home.jpg'),
+		alt: 'Brick home exterior with windows and perimeter joints',
+	},
+	{
+		slug: 'cut-out-reseal',
+		title: 'Cut Out & Reseal',
+		label: 'Remove & replace',
+		text: 'Worn, split or discoloured sealant cut out and replaced with a fresh, neat line.',
+		detail: 'Old sealant is cut out and the joint is cleaned and dried before new sealant is applied. Suited to baths, showers, kitchens, windows and doors where existing sealant has failed. A common job for homeowners and landlords in Bradford and nearby towns.',
+		applications: ['Bath and shower resealing', 'Kitchen worktop and sink joints', 'Window and door frame resealing', 'Replacing failed sealant lines'],
+		image: photo('bathrooms', 'bathroom-reseal.jpg'),
+		detailImage: photo('bathrooms', 'bathroom-hero.jpg'),
+		alt: 'Bath meeting a tiled wall with a clean sealant line',
+	},
+];
+
+export const projects = [
+	{
+		image: photo('bathrooms', 'bathroom-walk-in.jpg'),
+		category: 'bathrooms',
+		alt: 'Walk-in shower with tiled walls and a clean tray edge',
+		caption: 'Bathroom · Walk-in shower',
+		className: 'project project--large',
+	},
+	{
+		image: photo('internal', 'hall-threshold.jpg'),
+		category: 'internal-sealant',
+		alt: 'Hallway floor meeting skirting and a door threshold',
+		caption: 'Internal · Floor and skirting',
+		className: 'project',
+	},
+	{
+		image: photo('internal', 'kitchen-upstand.jpg'),
+		category: 'internal-sealant',
+		alt: 'Kitchen worktop upstand meeting the wall',
+		caption: 'Internal · Worktop upstand',
+		className: 'project',
+	},
+	{
+		image: photo('bathrooms', 'bathroom-full.jpg'),
+		category: 'bathrooms',
+		alt: 'Finished bathroom with bath, basin and tiled walls',
+		caption: 'Bathroom · Full finish',
+		className: 'project project--wide',
+	},
+	{
+		image: photo('bathrooms', 'bathroom-sealant-detail.jpg'),
+		category: 'bathrooms',
+		alt: 'Close detail of a finished sealant joint around a tiled shower tray',
+		caption: 'Bathroom · Shower junction',
+		className: 'project project--large',
+	},
+	{
+		image: photo('windows-and-doors', 'front-door.jpg'),
+		category: 'windows-doors',
+		alt: 'External door and window installation on a brick home',
+		caption: 'Windows & doors · Exterior',
+		className: 'project',
+	},
+	{
+		image: photo('external', 'exterior-home.jpg'),
+		category: 'external-sealant',
+		alt: 'Brick house facade and roofline',
+		caption: 'External · Building envelope',
+		className: 'project',
+	},
+	{
+		image: photo('internal', 'interior-junction.jpg'),
+		category: 'internal-sealant',
+		alt: 'Interior surface detail ready for a precise sealant bead',
+		caption: 'Internal · Clean finishing',
+		className: 'project project--wide',
+	},
+	{
+		image: photo('bathrooms', 'bathroom-tile.jpg'),
+		category: 'bathrooms',
+		alt: 'Tiled bath and wall junction',
+		caption: 'Bathroom · Bath surround',
+		className: 'project',
+	},
+	{
+		image: photo('windows-and-doors', 'window-frame.jpg'),
+		category: 'windows-doors',
+		alt: 'Window frame set into an exterior wall',
+		caption: 'Windows · Frame detail',
+		className: 'project project--detail',
+	},
+	{
+		image: photo('internal', 'interior-worktop.jpeg'),
+		category: 'internal-sealant',
+		alt: 'Kitchen worktop and wall joint',
+		caption: 'Internal · Worktop junction',
+		className: 'project project--wide',
+	},
+	{
+		image: photo('external', 'brick-facade.jpg'),
+		category: 'external-sealant',
+		alt: 'Exterior brickwork around a window opening',
+		caption: 'External · Brickwork',
+		className: 'project',
+	},
+	{
+		image: photo('bathrooms', 'bathroom-shower.jpg'),
+		category: 'bathrooms',
+		alt: 'Finished bathroom shower area',
+		caption: 'Bathroom · Wet area',
+		className: 'project project--large',
+	},
+	{
+		image: photo('internal', 'interior-finish.jpg'),
+		category: 'internal-sealant',
+		alt: 'Interior floor and wall finish detail',
+		caption: 'Internal · Floor finish',
+		className: 'project',
+	},
+	{
+		image: photo('bathrooms', 'bathroom-reseal.jpg'),
+		category: 'cut-out-reseal',
+		alt: 'Bath meeting a tiled wall with a clean sealant line',
+		caption: 'Cut out & reseal · Bath junction',
+		className: 'project',
+	},
+];

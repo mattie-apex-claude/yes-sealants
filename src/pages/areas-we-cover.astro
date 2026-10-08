@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CTASection from '../components/CTASection.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import { photo, services } from '../data/siteContent';
+import { breadcrumbSchema } from '../data/schema';
+import { site } from '../data/site';
+
+const groups = [
+	{
+		title: 'Bradford and nearby',
+		text: 'Our base is in Bradford, and we work in Shipley, Bingley, Keighley and Cleckheaton as well as across Bradford itself.',
+		towns: ['Bradford', 'Shipley', 'Bingley', 'Keighley', 'Cleckheaton'],
+	},
+	{
+		title: 'Leeds and Wharfedale',
+		text: 'Homes and commercial sites in Leeds, Pudsey, Morley, Horsforth, Guiseley, Otley and Ilkley.',
+		towns: ['Leeds', 'Pudsey', 'Morley', 'Horsforth', 'Guiseley', 'Otley', 'Ilkley'],
+	},
+	{
+		title: 'Wakefield, Kirklees and Calderdale',
+		text: 'We also cover Wakefield, Dewsbury, Batley, Huddersfield, Halifax and Brighouse.',
+		towns: ['Wakefield', 'Dewsbury', 'Batley', 'Huddersfield', 'Halifax', 'Brighouse'],
+	},
+];
+---
+
+<Layout
+	title="Areas We Cover | Bradford & West Yorkshire Sealant Specialist"
+	description="Based in Bradford, Yes Sealants covers Leeds, Wakefield, Huddersfield, Halifax, Keighley, Shipley, Bingley, Ilkley and more across West Yorkshire and surrounding areas."
+	schema={[breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Areas we cover', path: '/areas-we-cover' }])]}
+>
+	<section class="page-intro" aria-labelledby="areas-page-title">
+		<div class="container page-intro__inner reveal">
+			<p class="eyebrow eyebrow--light">Areas we cover</p>
+			<h1 id="areas-page-title">Sealant work across<br /><span>West Yorkshire.</span></h1>
+			<p>{site.areaLine} {site.outOfAreaLine}</p>
+		</div>
+	</section>
+
+	<section class="areas-section" aria-labelledby="areas-based-title">
+		<div class="container areas-layout">
+			<div class="areas-copy reveal">
+				<p class="eyebrow eyebrow--light">Based in Bradford</p>
+				<h2 id="areas-based-title">Local to Bradford,<br /><em>covering Yorkshire.</em></h2>
+				<p>Yes Sealants works with homeowners, landlords, contractors and commercial clients across Bradford, West Yorkshire and surrounding areas. Whether it’s a bathroom reseal, window and door sealant or a larger project, tell us where the work is and we’ll confirm availability.</p>
+				<a class="button button--gray" href="/contact">Get a Quote <span aria-hidden="true">↗</span></a>
+			</div>
+			<div class="areas-photo reveal-mask"><Photo src={photo('external', 'brick-facade.jpg')} alt="Brick building exterior with sealed window and door openings" widths={[640, 1200]} sizes="(max-width: 760px) 100vw, 600px" /></div>
+		</div>
+	</section>
+
+	<section class="section areas-towns" aria-labelledby="areas-towns-title">
+		<div class="container">
+			<div class="section-heading reveal">
+				<div><p class="eyebrow">Towns and cities</p><h2 id="areas-towns-title">Where we work</h2></div>
+				<p class="section-intro">If your town isn’t listed, it’s still worth asking. {site.outOfAreaLine}</p>
+			</div>
+			<div class="area-groups">
+				{groups.map((group, index) => (
+					<article class="area-group reveal" style={`--delay: ${index * 80}ms`}>
+						<h3>{group.title}</h3>
+						<p>{group.text}</p>
+						<ul class="area-list" aria-label={`Towns in ${group.title}`}>
+							{group.towns.map((town) => <li><Icon name="pin" size={14} />{town}</li>)}
+						</ul>
+					</article>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section services-section areas-services" aria-labelledby="areas-services-title">
+		<div class="container">
+			<div class="section-heading reveal">
+				<div><p class="eyebrow">Our services</p><h2 id="areas-services-title">Sealant services in<br /><em>your area.</em></h2></div>
+				<p class="section-intro">The same services are available across all of these areas.</p>
+			</div>
+			<ul class="areas-service-links reveal">
+				{services.map((service) => <li><a href={`/services#${service.slug}`}>{service.title}<span aria-hidden="true">→</span></a></li>)}
+			</ul>
+		</div>
+	</section>
+
+	<CTASection
+		id="areas-quote"
+		eyebrow="Not near us?"
+		headingFirst="Get in"
+		headingSecond="touch."
+		subtitle="Not near us? Get in touch and we’ll see if we can help. Tell us where the work is and which service you need."
+		primaryCta={{ text: 'Get a Quote', href: '/contact' }}
+		secondaryCta={{ text: 'View Services', href: '/services' }}
+	/>
+</Layout>
+
+<style>
+	.area-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+	.area-group { padding: clamp(20px, 2.5vw, 30px); border: 1px solid var(--silver-soft); border-radius: 7px; background: var(--off-white); }
+	.area-group h3 { margin-bottom: 10px; font-size: clamp(20px, 2vw, 24px); }
+	.area-group p { color: var(--charcoal); font-size: 14px; }
+	.area-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+	.area-list li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--silver-soft); border-radius: 999px; color: var(--brand); font-size: 13px; font-weight: 700; }
+	.area-list :global(.icon) { color: var(--gunmetal); }
+	.areas-service-links { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; list-style: none; }
+	.areas-service-links a { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 20px; border: 1px solid var(--silver); border-radius: 4px; background: var(--off-white); color: var(--brand); font-size: 14px; font-weight: 800; transition: background var(--motion), color var(--motion), border-color var(--motion); }
+	.areas-service-links a:hover { background: var(--brand); border-color: var(--silver); color: var(--off-white); }
+	@media (max-width: 900px) { .area-groups { grid-template-columns: 1fr; } }
+</style>
