@@ -1,5 +1,6 @@
 export interface WebsiteEnquiryEnv {
-  APEX_WEBSITE_ENDPOINT: string
+  /** Optional: defaults to the ApexFlow CRM endpoint below. */
+  APEX_WEBSITE_ENDPOINT?: string
   APEX_WEBSITE_ID: string
   APEX_WEBSITE_SECRET: string
   WEBSITE_FORM_FIELDS?: string
@@ -10,6 +11,10 @@ type PagesContext = { request: Request; env: WebsiteEnquiryEnv }
 type CanonicalField = 'name' | 'address' | 'postcode' | 'phone' | 'service' | 'message' | 'email'
 type FieldMap = Record<CanonicalField, string> & { honeypot?: string }
 
+// ApexFlow CRM's website endpoint, so a client site only needs its connection ID and secret.
+const defaultEndpoint = 'https://oghgjtlhwevgspofazpx.supabase.co/functions/v1/website-enquiry'
+// A hidden trap field with this name is used automatically when no honeypot is mapped.
+const defaultHoneypot = 'company_website'
 const canonicalFields: CanonicalField[] = ['name', 'address', 'postcode', 'phone', 'service', 'message', 'email']
 const maxBytes = 32 * 1024
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -70,7 +75,7 @@ function localHost(url: URL): boolean {
 
 function configuration(env: WebsiteEnquiryEnv, requestUrl: URL): { endpoint: URL; fields: FieldMap; successPath: string } {
   try {
-    const endpoint = absoluteUrl(env.APEX_WEBSITE_ENDPOINT)
+    const endpoint = absoluteUrl(env.APEX_WEBSITE_ENDPOINT ?? defaultEndpoint)
     if (endpoint.protocol !== 'https:' && !(endpoint.protocol === 'http:' && localHost(endpoint) && localHost(requestUrl))) throw new Error('insecure endpoint')
     if (endpoint.pathname !== '/functions/v1/website-enquiry' || endpoint.search || endpoint.hash) throw new Error('invalid endpoint')
     if (!uuidPattern.test(env.APEX_WEBSITE_ID) || !/^[0-9a-f]{64}$/i.test(env.APEX_WEBSITE_SECRET)) throw new Error('invalid credentials')
@@ -217,7 +222,8 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       submission_id: submissionId,
       ...fields,
       page_source: sourcePage(form, referer, requestUrl),
-      ...(config.fields.honeypot ? { website: text(form, config.fields.honeypot) } : {}),
+      ...(config.fields.honeypot ? { website: text(form, config.fields.honeypot) }
+        : form.has(defaultHoneypot) && !Object.values(config.fields).includes(defaultHoneypot) ? { website: text(form, defaultHoneypot) } : {}),
     }
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 15_000)
