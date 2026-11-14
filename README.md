@@ -10,7 +10,18 @@ npm run build    # production build to dist/
 
 ## Enquiry form
 
-`src/components/EnquiryForm.astro` posts JSON to the GoHighLevel inbound webhook set as `enquiryWebhook` in `src/data/site.ts`. No API keys are used. Payload fields: `fullName`, `phone`, `postcode`, `houseNumber`, `projectDetails`, `source`, `pageUrl`.
+`src/components/EnquiryForm.astro` posts the form to this site's `/api/website-enquiry` route (`functions/api/website-enquiry.ts`, a Cloudflare Pages Function). That route adds the private connection secret and sends the enquiry to ApexFlow CRM, where it lands in the pipeline as a New enquiry. Each enquiry carries a `submission_id`, so retries never create duplicates.
+
+Cloudflare Pages settings (Settings, Variables and Secrets, Production):
+
+| Name | Value |
+| --- | --- |
+| `APEX_WEBSITE_ENDPOINT` | `https://oghgjtlhwevgspofazpx.supabase.co/functions/v1/website-enquiry` |
+| `APEX_WEBSITE_ID` | The website connection ID from ApexFlow |
+| `APEX_WEBSITE_SECRET` | The 64 character connection secret (type: Secret) |
+| `WEBSITE_FORM_FIELDS` | `{"honeypot":"company_website"}` |
+
+`enquiryWebhook` in `src/data/site.ts` (GoHighLevel) is no longer used by the form.
 
 ## Other notes
 

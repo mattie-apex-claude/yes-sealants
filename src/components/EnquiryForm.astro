@@ -1,12 +1,13 @@
 ---
 // Adapted from the Simply-Bespoke QuoteForm (layout, validation, loading/success/error UX).
+// Sends enquiries to ApexFlow CRM through this site's own /api/website-enquiry route
+// (functions/api/website-enquiry.ts), which adds the private connection secret server side.
 import { site } from '../data/site';
 ---
 
 <div
   class="qf-wrapper"
   id="quote-form-wrapper"
-  data-webhook={site.enquiryWebhook}
   data-phone={site.phoneDisplay}
   data-phone-href={site.phoneHref}
   data-email={site.email}
@@ -22,7 +23,7 @@ import { site } from '../data/site';
           Name <span class="qf__req" aria-label="required">*</span>
         </label>
         <input
-          type="text" id="qf-name" name="full_name"
+          type="text" id="qf-name" name="name"
           class="qf__input" required maxlength="80"
           autocomplete="name" placeholder="Your name"
         />
@@ -33,7 +34,7 @@ import { site } from '../data/site';
           Mobile <span class="qf__req" aria-label="required">*</span>
         </label>
         <input
-          type="tel" id="qf-mobile" name="mobile"
+          type="tel" id="qf-mobile" name="phone"
           class="qf__input" required maxlength="20" inputmode="tel"
           autocomplete="tel" placeholder="e.g. 07950 586517"
         />
@@ -59,7 +60,7 @@ import { site } from '../data/site';
           House number <span class="qf__req" aria-label="required">*</span>
         </label>
         <input
-          type="text" id="qf-house" name="house_number"
+          type="text" id="qf-house" name="address"
           class="qf__input" required maxlength="30"
           autocomplete="off" placeholder="Number or house name"
         />
@@ -73,12 +74,17 @@ import { site } from '../data/site';
         Details about the project <span class="qf__req" aria-label="required">*</span>
       </label>
       <textarea
-        id="qf-desc" name="project_details"
+        id="qf-desc" name="message"
         class="qf__textarea" rows="5" required maxlength="2000"
         placeholder="Which service you need, what needs sealing and any timings..."
       ></textarea>
       <span class="qf__error" id="qf-desc-err" role="alert" aria-live="polite"></span>
     </div>
+
+    <!-- Sent with every enquiry: the CRM needs a service, an ID so retries are never duplicated, and the page it came from -->
+    <input type="hidden" name="service" value="Sealant work" />
+    <input type="hidden" name="submission_id" value="" />
+    <input type="hidden" name="page_source" value="" />
 
     <!-- Honeypot: real visitors never see or fill this -->
     <div class="qf__trap" aria-hidden="true">
@@ -138,8 +144,9 @@ import { site } from '../data/site';
 
   if (!wrapper || !form || !submitBtn) return;
 
-  // GoHighLevel inbound webhook (set in src/data/site.ts). The URL is the only identifier; no API keys are used.
-  const WEBHOOK_URL = wrapper.dataset.webhook ?? '';
+  // This site's own server route, which passes the enquiry to ApexFlow CRM.
+  const ENDPOINT = '/api/website-enquiry';
+  const PENDING_KEY = 'ys-enquiry-pending';
   const PHONE = wrapper.dataset.phone ?? '';
   const PHONE_HREF = wrapper.dataset.phoneHref ?? '';
   const EMAIL = wrapper.dataset.email ?? '';
@@ -270,38 +277,39 @@ import { site } from '../data/site';
 
     if (!validateAll()) return;
 
-    if (!WEBHOOK_URL) {
-      console.warn('[EnquiryForm] No webhook URL configured (src/data/site.ts).');
-      showFormError(`<strong>Online enquiries aren’t available right now.</strong> Please call <a href="${PHONE_HREF}">${PHONE}</a> or email <a href="${EMAIL_HREF}">${EMAIL}</a>.`);
-      return;
-    }
-
     submitting = true;
     setBusy(true);
 
     try {
+      const postcodeInput = form.elements.namedItem('postcode') as HTMLInputElement | null;
+      if (postcodeInput) postcodeInput.value = formatPostcode(postcodeInput.value.trim());
       const fd = new FormData(form);
       const text = (key: string) => ((fd.get(key) as string) ?? '').trim();
-      const payload = {
-        fullName:       text('full_name'),
-        phone:          text('mobile'),
-        postcode:       formatPostcode(text('postcode')),
-        houseNumber:    text('house_number'),
-        projectDetails: text('project_details'),
-        source:         'Yes Sealants Website',
-        pageUrl:        window.location.href,
-      };
+      // One ID per enquiry: a retry of the same details reuses it, so the CRM never gets it twice.
+      const content = JSON.stringify(['name', 'phone', 'postcode', 'address', 'message'].map(text));
+      let pending: { id: string; content: string } | null = null;
+      try { pending = JSON.parse(sessionStorage.getItem(PENDING_KEY) ?? 'null'); } catch { pending = null; }
+      if (!pending || pending.content !== content) pending = { id: crypto.randomUUID(), content };
+      try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(pending)); } catch { /* private browsing */ }
+      fd.set('submission_id', pending.id);
+      fd.set('page_source', window.location.origin + window.location.pathname);
+      const body = new URLSearchParams();
+      fd.forEach((value, key) => { if (typeof value === 'string') body.append(key, value.trim()); });
 
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body });
+      const result = await res.json().catch(() => null) as { status?: string; code?: string; fields?: Record<string, string> } | null;
 
-      if (res.ok) {
+      if (res.ok && result?.status === 'accepted') {
+        try { sessionStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
         showSuccess();
+      } else if (res.status === 400 && result?.fields && Object.keys(result.fields).length) {
+        const ids: Record<string, string> = { name: 'qf-name', phone: 'qf-mobile', postcode: 'qf-postcode', address: 'qf-house', message: 'qf-desc' };
+        Object.keys(result.fields).forEach(field => { if (ids[field]) fieldErr(ids[field], 'Please check this.'); });
+        showFormError('<strong>Please check the highlighted details.</strong>');
+      } else if (res.status === 429) {
+        showFormError(`<strong>Too many enquiries from this connection.</strong> Please wait a few minutes. ${fallbackContact}`);
       } else {
-        console.error('[EnquiryForm] Webhook responded with status', res.status);
+        console.error('[EnquiryForm] Enquiry route responded with status', res.status, result?.code);
         showFormError(`<strong>Your enquiry didn’t send (error ${res.status}).</strong> ${fallbackContact}`);
       }
     } catch (error) {
